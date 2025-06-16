@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/viyan-md/gator_rss/internal/app"
 	"github.com/viyan-md/gator_rss/internal/commands"
 	"github.com/viyan-md/gator_rss/internal/config"
