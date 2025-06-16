@@ -27,6 +27,7 @@ func getCommands() map[string]func(*app.State, Command) error {
 		"register": HandlerRegister,
 		"reset":    HandlerReset,
 		"users":    HandleUsers,
+		"agg":      HandleAgg,
 	}
 }
 

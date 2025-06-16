@@ -11,6 +11,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/viyan-md/gator_rss/internal/app"
 	"github.com/viyan-md/gator_rss/internal/database"
+	"github.com/viyan-md/gator_rss/internal/rss"
 )
 
 func HandlerLogin(s *app.State, cmd Command) error {
@@ -98,5 +99,16 @@ func HandleUsers(s *app.State, cmd Command) error {
 		fmt.Println()
 	}
 
+	return nil
+}
+
+func HandleAgg(s *app.State, cmd Command) error {
+	feedURL := "https://www.wagslane.dev/index.xml"
+	feed, err := rss.FetchFeed(context.Background(), s.Client, feedURL)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(feed)
 	return nil
 }

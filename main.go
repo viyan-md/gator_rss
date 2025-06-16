@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -27,7 +28,9 @@ func main() {
 
 	dbQueries := database.New(db)
 
-	sessionState := app.NewState(cfg, dbQueries)
+	client := &http.Client{}
+
+	sessionState := app.NewState(cfg, dbQueries, client)
 
 	cmd, err := commands.ParseArgs(os.Args...)
 	if err != nil {
