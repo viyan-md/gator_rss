@@ -7,20 +7,36 @@ import (
 	"github.com/viyan-md/gator_rss/internal/app"
 )
 
-func (c *CommandsList) Run(s *app.State, cmd Command) error {
-	handler, ok := c.Commands[cmd.Name]
+func Run(s *app.State, cmd Command) error {
+	handler, ok := getCommands()[cmd.Name]
 	if !ok {
-		return errors.New("invalid command")
+		return errors.New("error: invalid command")
 	}
 
 	err := handler(s, cmd)
 	if err != nil {
-		return fmt.Errorf("error: %v", err)
+		return fmt.Errorf("error: %w", err)
 	}
 
 	return nil
 }
 
-func (c *CommandsList) Register(name string, f func(*app.State, Command) error) {
-	c.Commands[name] = f
+func getCommands() map[string]func(*app.State, Command) error {
+	return map[string]func(*app.State, Command) error{
+		"login":    HandlerLogin,
+		"register": HandlerRegister,
+		"reset":    HandlerReset,
+		"users":    HandleUsers,
+	}
+}
+
+func ParseArgs(args ...string) (Command, error) {
+	if len(args) < 2 {
+		return Command{}, errors.New("invalid input")
+	}
+
+	return Command{
+		Name: args[1],
+		Args: args[2:],
+	}, nil
 }
