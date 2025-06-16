@@ -85,6 +85,11 @@ func HandleUsers(s *app.State, cmd Command) error {
 		os.Exit(1)
 	}
 
+	if len(users) < 1 {
+		fmt.Println("empty")
+		return nil
+	}
+
 	for _, user := range users {
 		fmt.Printf("* %s ", user.Name)
 		if user.Name == s.Config.CurrentUserName {
