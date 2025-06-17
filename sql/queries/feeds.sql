@@ -21,3 +21,9 @@ SELECT
 FROM feeds AS f
 LEFT JOIN users AS u
   ON f.user_id = u.id;
+
+-- name: MarkFeedFetched :one
+UPDATE feeds
+SET last_fetched_at = NOW()
+WHERE id = $1
+RETURNING *;

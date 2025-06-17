@@ -18,3 +18,13 @@ FROM feed_follows ff
 JOIN feeds f ON ff.feed_id = f.id
 JOIN users u ON ff.user_id = u.id
 WHERE u.id = $1;
+
+-- name: UnfollowFeed :one
+DELETE FROM feed_follows ff
+USING users u, feeds f
+WHERE
+    ff.user_id = u.id
+    AND ff.feed_id = f.id
+    AND u.id      = $1
+    AND f.url    = $2
+RETURNING ff.*;

@@ -32,6 +32,7 @@ func getCommands() map[string]func(*app.State, Command) error {
 		"feeds":     HandleGetFeeds,
 		"follow":    LoggedIn(HandleFollowFeed),
 		"following": LoggedIn(HandleListFollowing),
+		"unfollow":  LoggedIn(HandleUnfollowFeed),
 	}
 }
 

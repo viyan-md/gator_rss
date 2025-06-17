@@ -216,3 +216,18 @@ func printRow(args ...string) {
 		fmt.Println(val)
 	}
 }
+
+func HandleUnfollowFeed(s *app.State, cmd Command, user database.User) error {
+	unfollowParams := database.UnfollowFeedParams{
+		ID:  user.ID,
+		Url: cmd.Args[0],
+	}
+
+	unfollowed, err := s.DBQueries.UnfollowFeed(context.Background(), unfollowParams)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Unfollowed: \n%v\n", unfollowed)
+	return nil
+}
