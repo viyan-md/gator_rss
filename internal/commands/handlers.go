@@ -113,12 +113,7 @@ func HandleAgg(s *app.State, cmd Command) error {
 	return nil
 }
 
-func HandleAddFeed(s *app.State, cmd Command) error {
-	user, err := s.DBQueries.GetUser(context.Background(), s.Config.CurrentUserName)
-	if err != nil {
-		return err
-	}
-
+func HandleAddFeed(s *app.State, cmd Command, user database.User) error {
 	if len(cmd.Args) < 2 {
 		return errors.New("addfeed command requires name and url arguments")
 	}
@@ -180,12 +175,7 @@ func printFeedList(fl []database.GetFeedsRow) {
 	}
 }
 
-func HandleFollowFeed(s *app.State, cmd Command) error {
-	user, err := s.DBQueries.GetUser(context.Background(), s.Config.CurrentUserName)
-	if err != nil {
-		return err
-	}
-
+func HandleFollowFeed(s *app.State, cmd Command, user database.User) error {
 	feed, err := s.DBQueries.GetFeed(context.Background(), cmd.Args[0])
 	if err != nil {
 		return err
@@ -208,11 +198,7 @@ func HandleFollowFeed(s *app.State, cmd Command) error {
 	return nil
 }
 
-func HandleListFollowing(s *app.State, cmd Command) error {
-	user, err := s.DBQueries.GetUser(context.Background(), s.Config.CurrentUserName)
-	if err != nil {
-		return err
-	}
+func HandleListFollowing(s *app.State, cmd Command, user database.User) error {
 	followList, err := s.DBQueries.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return err

@@ -28,10 +28,10 @@ func getCommands() map[string]func(*app.State, Command) error {
 		"reset":     HandlerReset,
 		"users":     HandleUsers,
 		"agg":       HandleAgg,
-		"addfeed":   HandleAddFeed,
+		"addfeed":   LoggedIn(HandleAddFeed),
 		"feeds":     HandleGetFeeds,
-		"follow":    HandleFollowFeed,
-		"following": HandleListFollowing,
+		"follow":    LoggedIn(HandleFollowFeed),
+		"following": LoggedIn(HandleListFollowing),
 	}
 }
 
