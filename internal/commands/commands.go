@@ -23,11 +23,15 @@ func Run(s *app.State, cmd Command) error {
 
 func getCommands() map[string]func(*app.State, Command) error {
 	return map[string]func(*app.State, Command) error{
-		"login":    HandlerLogin,
-		"register": HandlerRegister,
-		"reset":    HandlerReset,
-		"users":    HandleUsers,
-		"agg":      HandleAgg,
+		"login":     HandlerLogin,
+		"register":  HandlerRegister,
+		"reset":     HandlerReset,
+		"users":     HandleUsers,
+		"agg":       HandleAgg,
+		"addfeed":   HandleAddFeed,
+		"feeds":     HandleGetFeeds,
+		"follow":    HandleFollowFeed,
+		"following": HandleListFollowing,
 	}
 }
 

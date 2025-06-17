@@ -112,3 +112,121 @@ func HandleAgg(s *app.State, cmd Command) error {
 	fmt.Print(feed)
 	return nil
 }
+
+func HandleAddFeed(s *app.State, cmd Command) error {
+	user, err := s.DBQueries.GetUser(context.Background(), s.Config.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	if len(cmd.Args) < 2 {
+		return errors.New("addfeed command requires name and url arguments")
+	}
+
+	newFeedParams := database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      cmd.Args[0],
+		Url:       cmd.Args[1],
+		UserID:    user.ID,
+	}
+
+	newFeed, err := s.DBQueries.CreateFeed(context.Background(), newFeedParams)
+	if err != nil {
+		return err
+	}
+
+	feedFollowParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    newFeed.ID,
+	}
+
+	_, err = s.DBQueries.CreateFeedFollow(context.Background(), feedFollowParams)
+	if err != nil {
+		return err
+	}
+
+	printFeed(&newFeed)
+	return nil
+}
+
+func printFeed(f *database.Feed) {
+	fmt.Printf("ID: %v\n", f.ID)
+	fmt.Printf("CreatedAt: %v\n", f.CreatedAt)
+	fmt.Printf("UpdatedAt: %v\n", f.UpdatedAt)
+	fmt.Printf("Name: %v\n", f.Name)
+	fmt.Printf("Url: %v\n", f.Url)
+	fmt.Printf("UserID: %v\n", f.UserID)
+}
+
+func HandleGetFeeds(s *app.State, cmd Command) error {
+	feedsList, err := s.DBQueries.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+	printFeedList(feedsList)
+	return nil
+}
+
+func printFeedList(fl []database.GetFeedsRow) {
+	for _, row := range fl {
+		fmt.Printf("Name:     %v\n", row.FeedName)
+		fmt.Printf("URL:      %v\n", row.FeedUrl)
+		fmt.Printf("User:     %v\n", row.UserName)
+	}
+}
+
+func HandleFollowFeed(s *app.State, cmd Command) error {
+	user, err := s.DBQueries.GetUser(context.Background(), s.Config.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	feed, err := s.DBQueries.GetFeed(context.Background(), cmd.Args[0])
+	if err != nil {
+		return err
+	}
+
+	feedFollowParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
+	}
+
+	createdRow, err := s.DBQueries.CreateFeedFollow(context.Background(), feedFollowParams)
+	if err != nil {
+		return err
+	}
+
+	printRow(createdRow.FeedName, createdRow.UserName)
+	return nil
+}
+
+func HandleListFollowing(s *app.State, cmd Command) error {
+	user, err := s.DBQueries.GetUser(context.Background(), s.Config.CurrentUserName)
+	if err != nil {
+		return err
+	}
+	followList, err := s.DBQueries.GetFeedFollowsForUser(context.Background(), user.ID)
+	if err != nil {
+		return err
+	}
+
+	for _, fname := range followList {
+		fmt.Printf(" - %v\n", fname)
+	}
+
+	return nil
+}
+
+func printRow(args ...string) {
+	for _, val := range args {
+		fmt.Println(val)
+	}
+}
