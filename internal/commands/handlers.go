@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -103,14 +104,18 @@ func HandleUsers(s *app.State, cmd Command) error {
 }
 
 func HandleAgg(s *app.State, cmd Command) error {
-	feedURL := "https://www.wagslane.dev/index.xml"
-	feed, err := rss.FetchFeed(context.Background(), s.Client, feedURL)
+	timeBetweenRequests, err := time.ParseDuration(cmd.Args[0])
 	if err != nil {
-		return err
+		return fmt.Errorf("invalid duration: %w", err)
 	}
 
-	fmt.Print(feed)
-	return nil
+	log.Printf("Collecting feeds every %s...", timeBetweenRequests)
+
+	ticker := time.NewTicker(timeBetweenRequests)
+
+	for ; ; <-ticker.C {
+		rss.ScrapeFeeds(s)
+	}
 }
 
 func HandleAddFeed(s *app.State, cmd Command, user database.User) error {
